@@ -12,6 +12,7 @@ struct Weather_AppApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+            print("hello world")
         }
     }
 }
