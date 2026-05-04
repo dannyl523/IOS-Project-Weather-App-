@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var apiData: String = "Placeholder"
+    
     var body: some View {
         VStack {
             Image(systemName: "globe")
@@ -16,9 +18,6 @@ struct ContentView: View {
             Text("Hello, Olaf")
         }
         .padding()
-    }
-}
-
 #Preview {
     ContentView()
 }
