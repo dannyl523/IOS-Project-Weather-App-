@@ -1,6 +1,6 @@
-<<<<<<< HEAD
 import SwiftUI
 
+<<<<<<< HEAD:Weather App/Weather_AppApp.swift
 struct WeatherResponse: Codable {
     let main: Main
     let weather: [Weather]
@@ -40,6 +40,14 @@ struct ContentView: View {
             Text("Temperature: \(temperature)°C")
             Text("Condition: \(description)")
             Text("Humidity: \(humidity)%")
+=======
+@main
+struct Weather_App: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+            print("hello world")
+>>>>>>> main:Weather App/Weather_App.swift
         }
         .padding()
     }
@@ -65,23 +73,3 @@ struct ContentView: View {
 }
 
  
-=======
-//
-//  Weather_AppApp.swift
-//  Weather App
-//
-//  Created by Student on 5/5/26.
-//
-
-import SwiftUI
-
-struct Weather_AppApp: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
-
-#Preview {
-    Weather_AppApp()
-}
->>>>>>> main
