@@ -7,12 +7,18 @@
 
 import SwiftUI
 
-@main
-struct Weather_AppApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-            print("hello world")
+struct ContentView: View {
+    var body: some View {
+        VStack {
+            Image(systemName: "globe")
+                .imageScale(.large)
+                .foregroundStyle(.tint)
+            Text("Hello, world!")
         }
+        .padding()
     }
+}
+
+#Preview {
+    ContentView()
 }

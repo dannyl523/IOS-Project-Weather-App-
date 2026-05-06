@@ -5,14 +5,14 @@
 //  Created by Student on 5/5/26.
 //
 
+
 import SwiftUI
 
-struct Weather_AppApp: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+@main
+struct Weather_AppApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
     }
-}
-
-#Preview {
-    Weather_AppApp()
 }
