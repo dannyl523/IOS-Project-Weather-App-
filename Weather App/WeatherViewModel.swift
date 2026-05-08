@@ -11,8 +11,8 @@ import Combine
 class WeatherViewModel: ObservableObject {
     @Published var weatherText = "Loading..."
 
-    func fetchWeather(for city: String) {
-        let urlString = "https://api.api-ninjas.com/v1/weather?city=\(city)"
+    func fetchWeather(for lat: String, for lon: String) {
+        let urlString = "https://api.api-ninjas.com/v1/weather?lat=\(lat)&lon=\(lon)"
         guard let url = URL(string: urlString) else { return }
 
         var request = URLRequest(url: url)

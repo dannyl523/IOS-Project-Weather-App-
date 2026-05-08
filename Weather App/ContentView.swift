@@ -21,7 +21,7 @@ struct ContentView: View {
                 .padding()
         }
         .onAppear {
-            viewModel.fetchWeather(for: "New York")
+            viewModel.fetchWeather(for: "40.689047123831806", for: "-73.97678337976012")
         }
     }
 }
