@@ -9,24 +9,62 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var viewModel = WeatherViewModel()
+    @State private var showDetail = false
+    @State private var logoScale: CGFloat = 1.0
+    @State private var textPressed = false
 
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
+        VStack(spacing: 20) {
+            Text("What is the weather at Tech?")
+                .font(.largeTitle)
+                .bold()
+                .multilineTextAlignment(.center)
+                .foregroundColor(textPressed ? .blue : .black)
+                .onLongPressGesture {
+                    textPressed.toggle()
+                }
 
-            Text("Weather")
-            Text(viewModel.weatherText)
-                .padding()
+            if let weather = viewModel.weather {
+                Image(systemName: "cloud.sun.fill")
+                // Future implementation might include changing the image associated with the projet, so that on raining / non sunny days, the image changes.
+                    .font(.system(size: 60))
+                    .foregroundColor(.yellow)
+                    .scaleEffect(logoScale)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.5), value: logoScale)
+                    .onTapGesture {
+                        logoScale = logoScale == 1.0 ? 1.5 : 1.0
+                    }
+                
+                VStack(spacing: 10) {
+                    Text("Temperature: \(String(format: "%.2f", weather.temp))°C")
+                    Text("Feels Like: \(String(format: "%.2f", weather.feels_like))°C")
+                    Text("Humidity: \(weather.humidity)%")
+                    Text("Wind: \(String(format: "%.2f", weather.wind_speed)) m/s")
+                    Text("Cloud Cover: \(weather.cloud_pct)%")
+                }
+                .font(.title3)
+                
+                Button("More Details"){
+                    showDetail = true
+                }
+                .sheet(isPresented: $showDetail){
+                    DetailView(weather: weather)
+                }
+            } else if let error = viewModel.errorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+            } else {
+                ProgressView("Loading Weather…")
+            }
         }
+        .padding()
         .onAppear {
-            viewModel.fetchWeather(for: "40.689047123831806", for: "-73.97678337976012")
+            viewModel.loadWeather()
         }
     }
 }
 
-
 #Preview {
     ContentView()
 }
+
