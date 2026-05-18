@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var showDetail = false
     @State private var logoScale: CGFloat = 1.0
     @State private var textPressed = false
+    @State private var iconPressed = false
 
     // Returns a SF Symbol name based on cloud cover percentage
     func weatherIcon(cloudPct: Int) -> String {
@@ -55,7 +56,10 @@ struct ContentView: View {
                     .onTapGesture {
                         logoScale = logoScale == 1.0 ? 1.5 : 1.0
                     }
-
+                    .onLongPressGesture {
+                        iconPressed.toggle()
+                    }
+                
                 VStack(spacing: 10) {
                     Text("Temperature: \(String(format: "%.2f", weather.temp))°C")
                     Text("Feels Like: \(String(format: "%.2f", weather.feels_like))°C")
