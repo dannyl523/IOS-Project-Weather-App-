@@ -11,6 +11,7 @@ struct ContentView: View {
     @StateObject var viewModel = WeatherViewModel()
     @State private var showDetail = false
     @State private var logoScale: CGFloat = 1.0
+    @State private var textPressed = false
 
     var body: some View {
         VStack(spacing: 20) {
@@ -18,6 +19,10 @@ struct ContentView: View {
                 .font(.largeTitle)
                 .bold()
                 .multilineTextAlignment(.center)
+                .foregroundColor(textPressed ? .blue : .black)
+                .onLongPressGesture {
+                    textPressed.toggle()
+                }
 
             if let weather = viewModel.weather {
                 Image(systemName: "cloud.sun.fill")
