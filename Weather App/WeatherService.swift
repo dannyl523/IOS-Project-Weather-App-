@@ -15,7 +15,7 @@ class WeatherService {
         guard let url = URL(string: urlString) else {
             throw URLError(.badURL)
         }
-
+        
         var request = URLRequest(url: url)
         request.setValue(apiKey, forHTTPHeaderField: "X-Api-Key")
 

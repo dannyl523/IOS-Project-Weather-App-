@@ -10,14 +10,26 @@ import SwiftUI
 struct ContentView: View {
     @StateObject var viewModel = WeatherViewModel()
     @State private var showDetail = false
+    @State private var logoScale: CGFloat = 1.0
 
     var body: some View {
         VStack(spacing: 20) {
-            Text("Weather")
+            Text("What is the weather at Tech?")
                 .font(.largeTitle)
                 .bold()
+                .multilineTextAlignment(.center)
 
             if let weather = viewModel.weather {
+                Image(systemName: "cloud.sun.fill")
+                // Future implementation might include changing the image associated with the projet, so that on raining / non sunny days, the image changes.
+                    .font(.system(size: 60))
+                    .foregroundColor(.yellow)
+                    .scaleEffect(logoScale)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.5), value: logoScale)
+                    .onTapGesture {
+                        logoScale = logoScale == 1.0 ? 1.5 : 1.0
+                    }
+                
                 VStack(spacing: 10) {
                     Text("Temperature: \(String(format: "%.2f", weather.temp))°C")
                     Text("Feels Like: \(String(format: "%.2f", weather.feels_like))°C")
