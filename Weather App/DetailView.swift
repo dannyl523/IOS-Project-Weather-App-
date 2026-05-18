@@ -28,7 +28,6 @@ struct DetailView: View {
                 .font(.largeTitle)
                 .bold()
 
-            Text("Wind Degrees: \(weather.wind_degrees)°")
             Text("Sunrise: \(unixToEST(weather.sunrise))")
             Text("Sunset: \(unixToEST(weather.sunset))")
         }
