@@ -7,14 +7,13 @@
 
 import SwiftUI
 
-// MARK: - ContentView
 struct ContentView: View {
     @StateObject var viewModel = WeatherViewModel()
     @State private var showDetail = false
     @State private var logoScale: CGFloat = 1.0
     @State private var textPressed = false
     @State private var iconPressed = false
-    @State private var useFahrenheit = false
+    @AppStorage("useFahrenheit") private var useFahrenheit: Bool = false
 
     // Returns a SF Symbol name based on cloud cover percentage
     func weatherIcon(cloudPct: Int) -> String {
@@ -46,6 +45,18 @@ struct ContentView: View {
                 .onLongPressGesture {
                     textPressed.toggle()
                 }
+            
+            HStack(spacing: 12) {
+                Text("Units:")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Picker("Units", selection: $useFahrenheit) {
+                    Text("Celsius").tag(false)
+                    Text("Fahrenheit").tag(true)
+                }
+                .pickerStyle(.segmented)
+            }
+            .padding(.horizontal)
 
             if let weather = viewModel.weather {
                 Image(systemName: weatherIcon(cloudPct: weather.cloud_pct))
@@ -62,40 +73,43 @@ struct ContentView: View {
                         iconPressed.toggle()
                     }
 
-                // °C / °F toggle
-                Toggle(useFahrenheit ? "Fahrenheit" : "Celsius", isOn: $useFahrenheit)
-                    .toggleStyle(.button)
-                    .buttonStyle(.bordered)
-                    .tint(.blue)
+                // Daily range — new addition
+                Text("High / Low: \(formatTemp(weather.max_temp))° / \(formatTemp(weather.min_temp))°\(useFahrenheit ? "F" : "C")")
+                    .foregroundColor(.secondary)
 
-                VStack(spacing: 10) {
-                    Text("Temperature: \(String(format: "%.2f", weather.temp))°C")
-                    Text("Feels Like: \(String(format: "%.2f", weather.feels_like))°C")
+                Text("Temperature: \(formatTemp(weather.temp))\(useFahrenheit ? "°F" : "°C")")
+                Text("Feels Like: \(formatTemp(weather.feels_like))\(useFahrenheit ? "°F" : "°C")")
+                Text("Humidity: \(weather.humidity)%")
+                Text("Wind: \(String(format: "%.2f", weather.wind_speed)) m/s")
+                Text("Cloud Cover: \(weather.cloud_pct)%")
+                    .font(.title3)
 
-                    // Daily range — new addition
-                    Text("High / Low: \(String(format: "%.1f", weather.max_temp))° / \(String(format: "%.1f", weather.min_temp))°C")
-                        .foregroundColor(.secondary)
-
-                    Text("Temperature: \(formatTemp(weather.temp))°\(useFahrenheit ? "F" : "C")")
-                    Text("Feels Like: \(formatTemp(weather.feels_like))°\(useFahrenheit ? "F" : "C")")
-                    Text("Humidity: \(weather.humidity)%")
-                    Text("Wind: \(String(format: "%.2f", weather.wind_speed)) m/s")
-                    Text("Cloud Cover: \(weather.cloud_pct)%")
+                if showDetail {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 36, weight: .semibold))
+                        .foregroundStyle(.blue)
+                        .transition(.scale.combined(with: .opacity))
+                        .padding(.top, 4)
                 }
-                .font(.title3)
-
-                // Last updated timestamp
-                if let updated = viewModel.lastUpdated {
-                    Text("Updated \(updated, style: .relative) ago")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-
-                Button("More Details") {
-                    showDetail = true
+                
+                Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        showDetail = true
+                    }
+                } label: {
+                    Label("More Details", systemImage: "info.circle")
+                        .font(.headline)
                 }
                 .sheet(isPresented: $showDetail) {
-                    DetailView(weather: weather)
+                    NavigationStack {
+                        DetailView(weather: weather)
+                            .navigationTitle("Weather Details")
+                            .navigationBarTitleDisplayMode(.inline)
+                            .padding()
+                    }
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+                    .presentationCornerRadius(20)
                 }
 
             } else if let error = viewModel.errorMessage {

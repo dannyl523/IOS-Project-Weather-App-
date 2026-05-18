@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DetailView: View {
     let weather: Weather
+    @AppStorage("useFahrenheit") private var useFahrenheit: Bool = false
 
     var timeFormatter: DateFormatter {
         let formatter = DateFormatter()
@@ -51,57 +52,55 @@ struct DetailView: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("More Details")
-                .font(.largeTitle)
-                .bold()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                // Temperature section
+                HStack(spacing: 12) {
+                    Image(systemName: "thermometer.sun")
+                        .foregroundStyle(.orange)
+                    let feels = useFahrenheit ? (weather.feels_like * 9/5 + 32) : weather.feels_like
+                    Text("Feels Like: \(String(format: "%.1f", feels))\(useFahrenheit ? "°F" : "°C")")
+                }
 
-            Divider()
+                // Wind section
+                HStack(spacing: 12) {
+                    Image(systemName: "wind")
+                        .foregroundStyle(.teal)
+                    Text("Wind: \(String(format: "%.1f", weather.wind_speed)) m/s • \(weather.wind_degrees)°")
+                }
 
-            // Wind section
-            VStack(spacing: 8) {
-                Label("Wind", systemImage: "wind")
-                    .font(.headline)
-                    .foregroundColor(.secondary)
-                Text("Direction: \(weather.wind_degrees)° (\(compassDirection(weather.wind_degrees)))")
-                Text("Speed: \(String(format: "%.2f", weather.wind_speed)) m/s")
+                // Humidity
+                HStack(spacing: 12) {
+                    Image(systemName: "humidity")
+                        .foregroundStyle(.blue)
+                    Text("Humidity: \(weather.humidity)%")
+                }
+
+                // Cloud cover
+                HStack(spacing: 12) {
+                    Image(systemName: "cloud.fill")
+                        .foregroundStyle(.gray)
+                    Text("Cloud Cover: \(weather.cloud_pct)%")
+                }
+
+                Divider().padding(.vertical, 4)
+
+                // Sun times
+                HStack(spacing: 12) {
+                    Image(systemName: "sunrise.fill")
+                        .foregroundStyle(.yellow)
+                    Text("Sunrise: \(unixToEST(weather.sunrise))")
+                }
+
+                HStack(spacing: 12) {
+                    Image(systemName: "sunset.fill")
+                        .foregroundStyle(.orange)
+                    Text("Sunset: \(unixToEST(weather.sunset))")
+                }
             }
-
-            Divider()
-
-            // Sun section
-            VStack(spacing: 8) {
-                Label("Sun", systemImage: "sun.horizon.fill")
-                    .font(.headline)
-                    .foregroundColor(.secondary)
-                Text("Sunrise: \(unixToEST(weather.sunrise))")
-                Text("Sunset: \(unixToEST(weather.sunset))")
-                Text("Daylight: \(daylightDuration)")
-                    .foregroundColor(.secondary)
-            }
-
-            Divider()
-
-            // Temperature range section
-            VStack(spacing: 8) {
-                Label("Today's Range", systemImage: "thermometer.medium")
-                    .font(.headline)
-                    .foregroundColor(.secondary)
-                Text("High: \(String(format: "%.1f", weather.max_temp))°C")
-                Text("Low: \(String(format: "%.1f", weather.min_temp))°C")
-            }
-
-            Divider()
-
-            // Humidity section
-            VStack(spacing: 8) {
-                Label("Humidity", systemImage: "humidity.fill")
-                    .font(.headline)
-                    .foregroundColor(.secondary)
-                Text("\(weather.humidity)% — \(humidityDescription)")
-            }
+            .font(.title3)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical)
         }
-        .font(.title3)
-        .padding()
     }
 }
