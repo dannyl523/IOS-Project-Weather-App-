@@ -8,24 +8,23 @@
 import Foundation
 import Combine
 
+@MainActor
 class WeatherViewModel: ObservableObject {
-    @Published var weatherText = "Loading..."
+    @Published var weather: Weather?
+    @Published var errorMessage: String?
 
-    func fetchWeather(for lat: String, for lon: String) {
-        let urlString = "https://api.api-ninjas.com/v1/weather?lat=\(lat)&lon=\(lon)"
-        guard let url = URL(string: urlString) else { return }
+    private let service = WeatherService()
 
-        var request = URLRequest(url: url)
-        request.setValue("bETWdfP1Jv8ZDzvl7Z6v6hTD6KrYm3D8A8Zz8pff", forHTTPHeaderField: "X-Api-Key")
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let data = data,
-               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-
-                DispatchQueue.main.async {
-                    self.weatherText = "\(json)"
-                }
+    func loadWeather() {
+        Task {
+            do {
+                self.weather = try await service.fetchWeather(
+                    lat: "40.689047123831806",
+                    lon: "-73.97678337976012"
+                )
+            } catch {
+                self.errorMessage = "Failed to load weather"
             }
-        }.resume()
+        }
     }
 }

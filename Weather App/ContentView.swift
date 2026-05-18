@@ -11,22 +11,35 @@ struct ContentView: View {
     @StateObject var viewModel = WeatherViewModel()
 
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-
+        VStack(spacing: 20) {
             Text("Weather")
-            Text(viewModel.weatherText)
-                .padding()
+                .font(.largeTitle)
+                .bold()
+
+            if let weather = viewModel.weather {
+                VStack(spacing: 10) {
+                    Text("Temperature: \(weather.temp)°C")
+                    Text("Feels Like: \(weather.feels_like)°C")
+                    Text("Humidity: \(weather.humidity)%")
+                    Text("Wind: \(weather.wind_speed) m/s")
+                    Text("Cloud Cover: \(weather.cloud_pct)%")
+                }
+                .font(.title3)
+            } else if let error = viewModel.errorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+            } else {
+                ProgressView("Loading Weather…")
+            }
         }
+        .padding()
         .onAppear {
-            viewModel.fetchWeather(for: "40.689047123831806", for: "-73.97678337976012")
+            viewModel.loadWeather()
         }
     }
 }
 
-
 #Preview {
     ContentView()
 }
+
