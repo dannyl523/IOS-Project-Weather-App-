@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// MARK: - ContentView
 struct ContentView: View {
     @StateObject var viewModel = WeatherViewModel()
     @State private var showDetail = false
@@ -69,9 +68,6 @@ struct ContentView: View {
                     .tint(.blue)
 
                 VStack(spacing: 10) {
-                    Text("Temperature: \(String(format: "%.2f", weather.temp))°C")
-                    Text("Feels Like: \(String(format: "%.2f", weather.feels_like))°C")
-
                     // Daily range — new addition
                     Text("High / Low: \(String(format: "%.1f", weather.max_temp))° / \(String(format: "%.1f", weather.min_temp))°C")
                         .foregroundColor(.secondary)
