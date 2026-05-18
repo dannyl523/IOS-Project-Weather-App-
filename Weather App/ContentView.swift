@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var showDetail = false
     @State private var logoScale: CGFloat = 1.0
     @State private var textPressed = false
+    @State private var iconPressed = false
 
     var body: some View {
         VStack(spacing: 20) {
@@ -28,11 +29,14 @@ struct ContentView: View {
                 Image(systemName: "cloud.sun.fill")
                 // Future implementation might include changing the image associated with the projet, so that on raining / non sunny days, the image changes.
                     .font(.system(size: 60))
-                    .foregroundColor(.yellow)
+                    .foregroundColor(iconPressed ? .orange : .yellow)
                     .scaleEffect(logoScale)
                     .animation(.spring(response: 0.4, dampingFraction: 0.5), value: logoScale)
                     .onTapGesture {
                         logoScale = logoScale == 1.0 ? 1.5 : 1.0
+                    }
+                    .onLongPressGesture {
+                        iconPressed.toggle()
                     }
                 
                 VStack(spacing: 10) {
