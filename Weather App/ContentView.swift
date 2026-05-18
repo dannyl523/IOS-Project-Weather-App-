@@ -1,5 +1,5 @@
 //
-//  Weather_AppApp.swift
+//  ContentView.swift
 //  Weather App
 //
 //  Created by Student on 5/1/26.
@@ -16,6 +16,26 @@ struct ContentView: View {
     @State private var iconPressed = false
     @State private var useFahrenheit = false
 
+    // Returns a SF Symbol name based on cloud cover percentage
+    func weatherIcon(cloudPct: Int) -> String {
+        switch cloudPct {
+        case 0..<20:  return "sun.max.fill"
+        case 20..<50: return "cloud.sun.fill"
+        case 50..<80: return "cloud.fill"
+        default:      return "cloud.heavyrain.fill"
+        }
+    }
+
+    // Returns the icon's color based on cloud cover
+    func weatherIconColor(cloudPct: Int) -> Color {
+        switch cloudPct {
+        case 0..<20:  return .yellow
+        case 20..<50: return .yellow
+        case 50..<80: return .gray
+        default:      return .blue
+        }
+    }
+
     var body: some View {
         VStack(spacing: 20) {
             Text("What is the weather at Tech?")
@@ -28,10 +48,11 @@ struct ContentView: View {
                 }
 
             if let weather = viewModel.weather {
-                Image(systemName: "cloud.sun.fill")
-                // Future implementation might include changing the image associated with the projet, so that on raining / non sunny days, the image changes.
+                Image(systemName: weatherIcon(cloudPct: weather.cloud_pct))
+                // Icon changes dynamically based on cloud cover —
+                // sunny, partly cloudy, overcast, or rainy.
                     .font(.system(size: 60))
-                    .foregroundColor(iconPressed ? .orange : .yellow)
+                    .foregroundColor(weatherIconColor(cloudPct: weather.cloud_pct))
                     .scaleEffect(logoScale)
                     .animation(.spring(response: 0.4, dampingFraction: 0.5), value: logoScale)
                     .onTapGesture {
@@ -48,6 +69,13 @@ struct ContentView: View {
                     .tint(.blue)
 
                 VStack(spacing: 10) {
+                    Text("Temperature: \(String(format: "%.2f", weather.temp))°C")
+                    Text("Feels Like: \(String(format: "%.2f", weather.feels_like))°C")
+
+                    // Daily range — new addition
+                    Text("High / Low: \(String(format: "%.1f", weather.max_temp))° / \(String(format: "%.1f", weather.min_temp))°C")
+                        .foregroundColor(.secondary)
+
                     Text("Temperature: \(formatTemp(weather.temp))°\(useFahrenheit ? "F" : "C")")
                     Text("Feels Like: \(formatTemp(weather.feels_like))°\(useFahrenheit ? "F" : "C")")
                     Text("Humidity: \(weather.humidity)%")
@@ -55,16 +83,28 @@ struct ContentView: View {
                     Text("Cloud Cover: \(weather.cloud_pct)%")
                 }
                 .font(.title3)
-                
-                Button("More Details"){
+
+                // Last updated timestamp
+                if let updated = viewModel.lastUpdated {
+                    Text("Updated \(updated, style: .relative) ago")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Button("More Details") {
                     showDetail = true
                 }
-                .sheet(isPresented: $showDetail){
+                .sheet(isPresented: $showDetail) {
                     DetailView(weather: weather)
                 }
+
             } else if let error = viewModel.errorMessage {
                 Text(error)
                     .foregroundColor(.red)
+                Button("Retry") {
+                    viewModel.loadWeather()
+                }
+                .buttonStyle(.bordered)
             } else {
                 ProgressView("Loading Weather…")
             }

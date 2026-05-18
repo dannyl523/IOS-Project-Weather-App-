@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Weather: Codable{
+struct Weather: Codable {
     let temp: Double
     let feels_like: Double
     let humidity: Int
@@ -16,4 +16,8 @@ struct Weather: Codable{
     let sunrise: Int
     let sunset: Int
     let cloud_pct: Int
+
+    // Extended fields from API-Ninjas response
+    let min_temp: Double
+    let max_temp: Double
 }
