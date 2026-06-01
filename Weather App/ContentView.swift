@@ -73,32 +73,34 @@ struct ContentView: View {
                         iconPressed.toggle()
                     }
 
-                // Daily range — new addition
-                Text("High / Low: \(formatTemp(weather.max_temp))° / \(formatTemp(weather.min_temp))°\(useFahrenheit ? "F" : "C")")
-                    .foregroundColor(.secondary)
+                // °C / °F toggle
+                Toggle(useFahrenheit ? "Fahrenheit" : "Celsius", isOn: $useFahrenheit)
+                    .toggleStyle(.button)
+                    .buttonStyle(.bordered)
+                    .tint(.blue)
 
-                Text("Temperature: \(formatTemp(weather.temp))\(useFahrenheit ? "°F" : "°C")")
-                Text("Feels Like: \(formatTemp(weather.feels_like))\(useFahrenheit ? "°F" : "°C")")
-                Text("Humidity: \(weather.humidity)%")
-                Text("Wind: \(String(format: "%.2f", weather.wind_speed)) m/s")
-                Text("Cloud Cover: \(weather.cloud_pct)%")
-                    .font(.title3)
+                VStack(spacing: 10) {
+                    // Daily range — new addition
+                    Text("High / Low: \(String(format: "%.1f", weather.max_temp))° / \(String(format: "%.1f", weather.min_temp))°C")
+                        .foregroundColor(.secondary)
 
-                if showDetail {
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 36, weight: .semibold))
-                        .foregroundStyle(.blue)
-                        .transition(.scale.combined(with: .opacity))
-                        .padding(.top, 4)
+                    Text("Temperature: \(formatTemp(weather.temp))°\(useFahrenheit ? "F" : "C")")
+                    Text("Feels Like: \(formatTemp(weather.feels_like))°\(useFahrenheit ? "F" : "C")")
+                    Text("Humidity: \(weather.humidity)%")
+                    Text("Wind: \(String(format: "%.2f", weather.wind_speed)) m/s")
+                    Text("Cloud Cover: \(weather.cloud_pct)%")
                 }
-                
-                Button {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                        showDetail = true
-                    }
-                } label: {
-                    Label("More Details", systemImage: "info.circle")
-                        .font(.headline)
+                .font(.title3)
+
+                // Last updated timestamp
+                if let updated = viewModel.lastUpdated {
+                    Text("Updated \(updated, style: .relative) ago")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Button("More Details") {
+                    showDetail = true
                 }
                 .sheet(isPresented: $showDetail) {
                     NavigationStack {
