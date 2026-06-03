@@ -16,13 +16,20 @@ class WeatherViewModel: ObservableObject {
 
     private let service = WeatherService()
     private var refreshTask: Task<Void, Never>?
+    private var currentLat: String = "40.689047123831806"
+    private var currentLon: String = "-73.97678337976012"
 
-    func loadWeather() {
+    func loadWeather(lat: String? = nil, lon: String? = nil) {
+        if let lat = lat, let lon = lon {
+            currentLat = lat
+            currentLon = lon
+        }
+
         Task {
             do {
                 self.weather = try await service.fetchWeather(
-                    lat: "40.689047123831806",
-                    lon: "-73.97678337976012"
+                    lat: currentLat,
+                    lon: currentLon
                 )
                 self.lastUpdated = Date()
                 self.errorMessage = nil
@@ -57,4 +64,6 @@ class WeatherViewModel: ObservableObject {
     deinit {
         refreshTask?.cancel()
     }
+    
+    
 }

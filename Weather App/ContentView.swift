@@ -14,6 +14,9 @@ struct ContentView: View {
     @State private var textPressed = false
     @State private var iconPressed = false
     @AppStorage("useFahrenheit") private var useFahrenheit: Bool = false
+    @State private var latInput: String = ""
+    @State private var lonInput: String = ""
+    @State private var coordError: String? = nil
 
     // Returns a SF Symbol name based on cloud cover percentage
     func weatherIcon(cloudPct: Int) -> String {
@@ -37,7 +40,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            Text("What is the weather at Tech?")
+            Text("What is the weather at ...?")
                 .font(.largeTitle)
                 .bold()
                 .multilineTextAlignment(.center)
@@ -45,6 +48,32 @@ struct ContentView: View {
                 .onLongPressGesture {
                     textPressed.toggle()
                 }
+            
+            // Coordinate search
+            VStack(spacing: 8) {
+                HStack(spacing: 10) {
+                    TextField("Latitude (e.g. 40.689)", text: $latInput)
+                        .textFieldStyle(.roundedBorder)
+                        .keyboardType(.decimalPad)
+
+                    TextField("Longitude (e.g. -73.976)", text: $lonInput)
+                        .textFieldStyle(.roundedBorder)
+                        .keyboardType(.decimalPad)
+                }
+
+                if let coordError = coordError {
+                    Text(coordError)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
+
+                Button("Search") {
+                    searchCoordinates()
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(latInput.isEmpty || lonInput.isEmpty)
+            }
+            .padding(.horizontal)
             
             HStack(spacing: 12) {
                 Text("Units:")
@@ -131,10 +160,26 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Helpers
     private func formatTemp(_ celsius: Double) -> String {
         let value = useFahrenheit ? (celsius * 9 / 5) + 32 : celsius
         return String(format: "%.2f", value)
+    }
+    
+    private func searchCoordinates() {
+        let latTrimmed = latInput.trimmingCharacters(in: .whitespaces)
+        let lonTrimmed = lonInput.trimmingCharacters(in: .whitespaces)
+
+        guard let lat = Double(latTrimmed), (-90...90).contains(lat) else {
+            coordError = "Latitude must be a number between -90 and 90."
+            return
+        }
+        guard let lon = Double(lonTrimmed), (-180...180).contains(lon) else {
+            coordError = "Longitude must be a number between -180 and 180."
+            return
+        }
+
+        coordError = nil
+        viewModel.loadWeather(lat: latTrimmed, lon: lonTrimmed)
     }
 }
 
